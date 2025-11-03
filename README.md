@@ -124,10 +124,12 @@ MongoDB
 
 node-cron (para actualizar los datos periódicamente)
 
-🪪 Licencia
+  Licencia
 Este proyecto se distribuye bajo la licencia MIT.
 Puedes usarlo, modificarlo y distribuirlo libremente citando la fuente.
 
 👨‍💻 Autor
 Desarrollado por Alberto Collantes Sánchez
 💬 Contacto: collantessanchezalberto@gmail.com
+
+  Futuras actualizaciones e ideas se pueden ver en el notas.txt de la raíz del proyecto
