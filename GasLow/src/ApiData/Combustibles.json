@@ -1,0 +1,49 @@
+[
+{
+  "Tipo": "Adblue"
+}, {
+  "Tipo": "Amoniaco"
+}, {
+  "Tipo": "Biodiesel"
+}, {
+  "Tipo": "Bioetanol"
+}, {
+  "Tipo": "Biogas Natural Comprimido"
+}, {
+  "Tipo": "Biogas Natural Licuado"
+}, {
+  "Tipo": "Diésel Renovable"
+}, {
+  "Tipo": "Gas Natural Comprimido"
+}, {
+  "Tipo": "Gas Natural Licuado"
+}, {
+  "Tipo": "Gases licuados del petróleo"
+}, {
+  "Tipo": "Gasoleo A"
+}, {
+  "Tipo": "Gasoleo B"
+}, {
+  "Tipo": "Gasoleo Premium"
+}, {
+  "Tipo": "Gasolina 95 E5"
+}, {
+  "Tipo": "Gasolina 95 E5 Premium"
+}, {
+  "Tipo": "Gasolina 95 E10"
+}, {
+  "Tipo": "Gasolina 95 E25"
+}, {
+  "Tipo": "Gasolina 95 E85"
+}, {
+  "Tipo": "Gasolina 98 E5"
+}, {
+  "Tipo": "Gasolina 98 E10"
+}, {
+  "Tipo": "Gasolina Renovable"
+}, {
+  "Tipo": "Hidrogeno"
+}, {
+  "Tipo": "Metanol"
+}
+]

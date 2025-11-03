@@ -1,0 +1,77 @@
+[
+  {
+    "nombre": "Precio Adblue"
+  },
+  {
+    "nombre": "Precio Amoniaco"
+  },
+  {
+    "nombre": "Precio Biodiesel"
+  },
+  {
+    "nombre": "Precio Bioetanol"
+  },
+  {
+    "nombre": "Precio Biogas Natural Comprimido"
+  },
+  {
+    "nombre": "Precio Biogas Natural Licuado"
+  },
+  {
+    "nombre": "Precio Diésel Renovable"
+  },
+  {
+    "nombre": "Precio Gas Natural Comprimido"
+  },
+  {
+    "nombre": "Precio Gas Natural Licuado"
+  },
+  {
+    "nombre": "Precio Gases licuados del petróleo"
+  },
+  {
+    "nombre": "Precio Gasoleo A"
+  },
+  {
+    "nombre": "Precio Gasoleo B"
+  },
+  {
+    "nombre": "Precio Gasoleo Premium"
+  },
+  {
+    "nombre": "Precio Gasolina 95 E5"
+  },
+  {
+    "nombre": "Precio Gasolina 95 E5 Premium"
+  },
+  {
+    "nombre": "Precio Gasolina 95 E10"
+  },
+  {
+    "nombre": "Precio Gasolina 95 E25"
+  },
+  {
+    "nombre": "Precio Gasolina 95 E85"
+  },
+  {
+    "nombre": "Precio Gasolina 98 E5"
+  },
+  {
+    "nombre": "Precio Gasolina 98 E10"
+  },
+  {
+    "nombre": "Precio Gasolina Renovable"
+  },    
+  {
+    "nombre": "Precio Hidrogeno"
+  },
+  {
+    "nombre": "Precio Metanol"
+  },
+  {
+    "nombre": "% BioEtanol"
+  },
+  {
+    "nombre": "% Éster metílico"
+  }
+]

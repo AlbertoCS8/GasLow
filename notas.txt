@@ -1,0 +1,6 @@
+meter algo de paginacion, 
+algun mapilla sobretodo en el de busacr por radio y mejorar un poco las fichas de las gasolineras con alguna fotillo
+por que provincias pasamos ordenar las gasolineras mas baratas (pensar es muy extenso)
+script que meta los google placeId en bdd para obviar peticiones innecesarias a google (habría que cambiar la manera en la que se refresca la bdd)
+hacerla responsive
+que al clicar en la gasolinera se haga focus en el mapa o abra algun otro componente como por encima con la distancia entre usuario y gaso...?

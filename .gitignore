@@ -1,25 +1,57 @@
-# Logs
-logs
-*.log
+# =========================
+# 📦 NODE / GENERAL
+# =========================
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# =========================
+# ⚙️ ENVIRONMENT FILES
+# =========================
+.env
+.env.*
+!.env.example
+GasLowBack/.env
+GasLow/.env
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# =========================
+# 🏗️ BUILD OUTPUT
+# =========================
+dist/
+build/
+dist-ssr/
+GasLow/build/
+GasLowBack/dist/
+GasLowBack/build/
+
+# =========================
+# 🧰 CACHE FILES
+# =========================
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.next/
+.turbo/
+.nyc_output/
+coverage/
+
+# =========================
+# 💻 EDITOR / OS FILES
+# =========================
+.vscode/
+.idea/
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-README.md
+Thumbs.db
+
+# =========================
+# 🧩 MISC
+# =========================
+*.swp
+*.tsbuildinfo
+*.log
+logs/
+
