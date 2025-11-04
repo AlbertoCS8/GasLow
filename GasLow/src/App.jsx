@@ -15,12 +15,17 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 
 function App() {
-  setTimeout(() => { console.log(activeStep)},2000)
+  setTimeout(() => {
+    console.log(activeStep);
+  }, 2000);
   let [selectedCCAA, setSelectedCCAA] = useState("");
   let [selectedProvincia, setSelectedProvincia] = useState("");
   let [selectedMunicipio, setSelectedMunicipio] = useState("");
-  let [gasolineras, setGasolineras] = useState([]);
+  let [gasolineras, setGasolineras] = useState([]); // variable para mostrar
+  let [GasolinerasOrdenadas, setGasolinerasOrdenadas] = useState([]); // variable comodin que siempre tiene almacenadas todas las gasolineras ordenadas
   let [selectedCombustible, setSelectedCombustible] = useState("");
+  let [pages, setPages] = useState(0);
+  let [actualPage, setActualPage] = useState(0);
   const navigate = useNavigate();
   //#region Stepper Material UI
   const steps = [
@@ -110,14 +115,24 @@ function App() {
     "ResultadoConsulta": "OK"
 }
       */
-    obtenerGasolinerasPorMunicipio(selectedMunicipio).then((data) => {
-      console.log("Gasolineras recibidas:", data);
-      let GasolinerasOrdenadas = ordenarGasolinerasPorPrecio(
+    obtenerGasolinerasPorMunicipio(selectedMunicipio).then(async (data) => {
+      const ordenadas = await ordenarGasolinerasPorPrecio(
         data,
         selectedCombustible
       );
-      setGasolineras(GasolinerasOrdenadas);
+      setGasolinerasOrdenadas(ordenadas);
+      setGasolineras(ordenadas.slice(0, 10));
+      setPages(Math.ceil(ordenadas.length / 10));
     });
+  }
+  function recalcularGasolineras(direction) {
+    console.log(GasolinerasOrdenadas);
+    const nuevaPagina = actualPage + direction;
+    const start = nuevaPagina * 10;
+    const end = start + 10;
+    setGasolineras(GasolinerasOrdenadas.slice(start, end));
+    setActualPage(nuevaPagina);
+    console.log(GasolinerasOrdenadas, " despues de setear");
   }
 
   return (
@@ -126,7 +141,9 @@ function App() {
       <p className="descripcion">
         Encuentra gasolineras cerca de ti a un precio razonable y sin anuncios.
       </p>
-      <button onClick={() => navigate("/busca-radio")}>Busca gasolineras cercanas</button>
+      <button onClick={() => navigate("/busca-radio")}>
+        Busca gasolineras cercanas
+      </button>
       {/* de momento vamos a hacerlo seleccionando el municipio y ya despues lo hare con proximidad y eso*/}
       <Stepper activeStep={activeStep} className="Stepper">
         {steps.map((label, index) => {
@@ -138,14 +155,22 @@ function App() {
             stepProps.completed = false;
           }
           return (
-            <Step key={label} {...stepProps} onClick={() => {if(index < activeStep) setActiveStep(index); if(activeStep <4) setGasolineras([]);}}>
+            <Step
+              key={label}
+              {...stepProps}
+              onClick={() => {
+                if (index < activeStep) setActiveStep(index);
+                if (activeStep < 4) setGasolineras([]);
+              }}
+            >
               <StepLabel {...labelProps}>{label}</StepLabel>
             </Step>
           );
         })}
       </Stepper>
       {activeStep === 0 ? (
-        <select className="form-select w-auto"
+        <select
+          className="form-select w-auto"
           onChange={(e) => {
             setSelectedCCAA(e.target.value);
             handleNext();
@@ -160,7 +185,8 @@ function App() {
         </select>
       ) : null}
       {selectedCCAA && activeStep === 1 ? (
-        <select className="form-select w-auto"
+        <select
+          className="form-select w-auto"
           onChange={(e) => {
             setSelectedProvincia(e.target.value);
             handleNext();
@@ -177,7 +203,8 @@ function App() {
         </select>
       ) : null}
       {selectedProvincia && activeStep === 2 ? (
-        <select className="form-select w-auto"
+        <select
+          className="form-select w-auto"
           onChange={(e) => {
             setSelectedMunicipio(e.target.value);
             handleNext();
@@ -194,7 +221,8 @@ function App() {
         </select>
       ) : null}
       {selectedMunicipio && activeStep === 3 ? (
-        <select className="form-select w-auto"
+        <select
+          className="form-select w-auto"
           onChange={(e) => {
             setSelectedCombustible(e.target.value);
             if (gasolineras.length > 0) {
@@ -216,10 +244,18 @@ function App() {
         </select>
       ) : null}
       {selectedMunicipio && activeStep === 4 && gasolineras.length === 0 ? (
-        <button onClick={() => {buscarGasolineras(); setActiveStep(5)}}>Buscar</button>
+        <button
+          onClick={() => {
+            buscarGasolineras();
+            setActiveStep(5);
+          }}
+        >
+          Buscar
+        </button>
       ) : null}
       <div>
-        {gasolineras && activeStep >= 4 &&
+        {gasolineras &&
+          activeStep >= 4 &&
           gasolineras.map(
             (gasolinera) =>
               gasolinera[`Precio ${selectedCombustible}`] !== null && (
@@ -235,14 +271,15 @@ function App() {
                       {gasolinera[`Precio ${selectedCombustible}`]}
                     </p>
                   }
-                  {/* <p>Click aquí para ver en Google Maps <a href={`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${gasolinera.Rótulo}&inputtype=textquery&locationbias=point:${gasolinera.Latitud},${gasolinera.Longitud}&fields=place_id,name,geometry,formatted_address&key=${GOOGLE_MAPS_API_KEY}`}>enlace</a></p> */}
-                  {/* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-icon lucide-map" onClick={async () => {window.open(`https://www.google.com/maps/search/?api=1&query=${gasolinera.Latitud},${gasolinera["Longitud (WGS84)"]},${gasolinera.Rótulo},${gasolinera.Provincia},${gasolinera.Localidad},${gasolinera.Dirección}`, "_blank"); }}>
+                  {/*#region
+                   <p>Click aquí para ver en Google Maps <a href={`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${gasolinera.Rótulo}&inputtype=textquery&locationbias=point:${gasolinera.Latitud},${gasolinera.Longitud}&fields=place_id,name,geometry,formatted_address&key=${GOOGLE_MAPS_API_KEY}`}>enlace</a></p> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-icon lucide-map" onClick={async () => {window.open(`https://www.google.com/maps/search/?api=1&query=${gasolinera.Latitud},${gasolinera["Longitud (WGS84)"]},${gasolinera.Rótulo},${gasolinera.Provincia},${gasolinera.Localidad},${gasolinera.Dirección}`, "_blank"); }}>
                   <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/>
                   <path d="M15 5.764v15"/>
                   <path d="M9 3.236v15"/>
                   </svg>
                   Version con link directo a maps (sin usar el backend){/* onClick={async () => {
-                  */}
+                  #endregion*/}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -269,6 +306,21 @@ function App() {
                 </div>
               )
           )}
+      </div>
+      <div>
+        {gasolineras.length > 0 ? (
+          <>
+            {actualPage < pages - 1 && (
+              <button onClick={() => recalcularGasolineras(1)}>Siguiente</button>
+            )}
+            {actualPage > 0 && (
+              <button onClick={() => recalcularGasolineras(-1)}>Anterior</button>
+            )}
+            <p>{`Mostrando ${actualPage * 10 + 1} - ${actualPage * 10 + gasolineras.length} de ${GasolinerasOrdenadas.length}`}</p>
+          </>
+        ) : (
+          <p>No se encontraron gasolineras.</p>
+        )}
       </div>
       {/*De momento vamos a dejarlo asi, en futuras actualizaciones mejoraremos estetica y filtros aparte de llevarte directo a maps  */}
     </>
