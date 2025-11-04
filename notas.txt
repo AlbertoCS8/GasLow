@@ -1,4 +1,4 @@
-meter algo de paginacion, 
+meter algo de paginacion --> cuando vuelvo a hacer una búsqueda tirando para atrás en el combustible se vuelve loco, ARREGLAR
 algun mapilla sobretodo en el de busacr por radio y mejorar un poco las fichas de las gasolineras con alguna fotillo
 por que provincias pasamos ordenar las gasolineras mas baratas (pensar es muy extenso)
 script que meta los google placeId en bdd para obviar peticiones innecesarias a google (habría que cambiar la manera en la que se refresca la bdd)
