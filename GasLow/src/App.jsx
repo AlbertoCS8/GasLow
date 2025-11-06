@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { act, useState } from "react";
 import CCAA from "../src/ApiData/CCAA.json";
 import Provincias from "../src/ApiData/Provincias.json";
 import Municipios from "../src/ApiData/Municipios.json";
@@ -6,7 +6,10 @@ import Combustibles from "../src/ApiData/Combustibles.json";
 import "./App.css";
 import { obtenerGasolinerasPorMunicipio } from "./Servicios/RestPeticiones.js";
 import { getGasolineraId } from "./Servicios/RestGoogle.js";
-import { ordenarGasolinerasPorPrecio } from "./utils/funciones.js";
+import {
+  ordenarGasolinerasPorPrecio,
+  filtrarNulosEnPrecio,
+} from "./utils/funciones.js";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -15,14 +18,13 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 
 function App() {
-  setTimeout(() => {
-    console.log(activeStep);
-  }, 2000);
   let [selectedCCAA, setSelectedCCAA] = useState("");
   let [selectedProvincia, setSelectedProvincia] = useState("");
   let [selectedMunicipio, setSelectedMunicipio] = useState("");
-  let [gasolineras, setGasolineras] = useState([]); // variable para mostrar
+  let [gasolineras, setGasolineras] = useState([]); // variable para pintar las gasolineras en pantalla (de 10 en 10)
   let [GasolinerasOrdenadas, setGasolinerasOrdenadas] = useState([]); // variable comodin que siempre tiene almacenadas todas las gasolineras ordenadas
+  let [LengthGasolinerasFiltradas, setLengthGasolinerasFiltradas] = useState(0); // variable para almacenar el length de las gasolineras filtradas (sin nulos en precio) para que a la hora
+  //de paginar sepamos el total porque si no siempre seran las gasolineras del municipio (todas)
   let [selectedCombustible, setSelectedCombustible] = useState("");
   let [pages, setPages] = useState(0);
   let [actualPage, setActualPage] = useState(0);
@@ -35,6 +37,7 @@ function App() {
     "Seleccionar Combustible",
   ];
   const [activeStep, setActiveStep] = useState(0);
+  //Los Steps irán de 0 a 5
   const [skipped, setSkipped] = useState(new Set());
 
   const isStepOptional = (step) => {};
@@ -49,7 +52,6 @@ function App() {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
-
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
   };
@@ -63,7 +65,6 @@ function App() {
     // alert(`Buscando gasolineras en ${codigoPostal}...`);
     // console.log(selectedCCAA, selectedProvincia, selectedMunicipio);
     //hacemos pet con servicio pasandole el idMunicipio
-
     /*
       {
     "Fecha": "26/08/2025 21:28:42",
@@ -121,18 +122,33 @@ function App() {
         selectedCombustible
       );
       setGasolinerasOrdenadas(ordenadas);
-      setGasolineras(ordenadas.slice(0, 10));
-      setPages(Math.ceil(ordenadas.length / 10));
+      const filtradas = filtrarNulosEnPrecio(ordenadas, selectedCombustible);
+      setLengthGasolinerasFiltradas(filtradas.length);
+      setGasolineras(filtradas.slice(0, 10));
+      setPages(Math.ceil(filtradas.length / 10));
     });
   }
   function recalcularGasolineras(direction) {
-    console.log(GasolinerasOrdenadas);
     const nuevaPagina = actualPage + direction;
     const start = nuevaPagina * 10;
     const end = start + 10;
     setGasolineras(GasolinerasOrdenadas.slice(start, end));
     setActualPage(nuevaPagina);
-    console.log(GasolinerasOrdenadas, " despues de setear");
+  }
+  function reordenarGasolinerasPorPrecio(
+    GasolinerasOrdenadas,
+    tipoCombustible)
+    {
+    const ordenadas = ordenarGasolinerasPorPrecio(
+      GasolinerasOrdenadas,
+      tipoCombustible
+    );
+    setGasolinerasOrdenadas(ordenadas);
+    const filtradas = filtrarNulosEnPrecio(ordenadas, tipoCombustible);
+    setLengthGasolinerasFiltradas(filtradas.length);
+    setGasolineras(filtradas.slice(0, 10));
+    setPages(Math.ceil(filtradas.length / 10));
+    setActualPage(0);
   }
 
   return (
@@ -161,6 +177,10 @@ function App() {
               onClick={() => {
                 if (index < activeStep) setActiveStep(index);
                 if (activeStep < 4) setGasolineras([]);
+                if (index == 5) {
+                  setPages(0);
+                  setActualPage(0);
+                }
               }}
             >
               <StepLabel {...labelProps}>{label}</StepLabel>
@@ -225,10 +245,16 @@ function App() {
           className="form-select w-auto"
           onChange={(e) => {
             setSelectedCombustible(e.target.value);
-            if (gasolineras.length > 0) {
-              setGasolineras(
-                ordenarGasolinerasPorPrecio(gasolineras, e.target.value)
+            if (GasolinerasOrdenadas.length > 0) {
+              reordenarGasolinerasPorPrecio(
+                //cuando ya hay gasolineras cargadas y se cambia el combustible
+                GasolinerasOrdenadas, //deberia meter una nueva variable que me pinte el length de las filtradas porque si no siempre seran las gasolineras de el municipio
+                //si contar si uan vende adblue por ejemplo o no
+                e.target.value
               );
+              setActiveStep(4);
+              // setActualPage(0);
+              // setPages(0);
             }
             handleNext();
           }}
@@ -247,7 +273,7 @@ function App() {
         <button
           onClick={() => {
             buscarGasolineras();
-            setActiveStep(5);
+            // setActiveStep(5);
           }}
         >
           Buscar
@@ -308,19 +334,28 @@ function App() {
           )}
       </div>
       <div>
-        {gasolineras.length > 0 ? (
-          <>
-            {actualPage < pages - 1 && (
-              <button onClick={() => recalcularGasolineras(1)}>Siguiente</button>
-            )}
-            {actualPage > 0 && (
-              <button onClick={() => recalcularGasolineras(-1)}>Anterior</button>
-            )}
-            <p>{`Mostrando ${actualPage * 10 + 1} - ${actualPage * 10 + gasolineras.length} de ${GasolinerasOrdenadas.length}`}</p>
-          </>
-        ) : (
-          <p>No se encontraron gasolineras.</p>
-        )}
+        {activeStep >= 4 && GasolinerasOrdenadas.length > 0 && 
+          (gasolineras.length > 0 ? (
+            <>
+              {actualPage < pages - 1 && (
+                <button onClick={() => recalcularGasolineras(1)}>
+                  Siguiente
+                </button>
+              )}
+              {actualPage > 0 && (
+                <button onClick={() => recalcularGasolineras(-1)}>
+                  Anterior
+                </button>
+              )}
+              <p>{`Mostrando ${actualPage * 10 + 1} - ${
+                actualPage * 10 + gasolineras.length
+              } de ${LengthGasolinerasFiltradas}`}</p>
+            </>
+          ) : (
+            <p>
+              No se encontraron gasolineras en este municipio o con {selectedCombustible}.
+            </p>
+          ))}
       </div>
       {/*De momento vamos a dejarlo asi, en futuras actualizaciones mejoraremos estetica y filtros aparte de llevarte directo a maps  */}
     </>

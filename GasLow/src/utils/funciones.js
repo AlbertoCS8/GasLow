@@ -16,3 +16,9 @@ export function cambioComaPorPunto(gasolinera){
     }
     return gasolinera;
   }
+export function filtrarNulosEnPrecio(gasolineras, tipoCombustible) {
+  return gasolineras.filter((gasolinera) => {
+    const precio = gasolinera[`Precio ${tipoCombustible}`];
+    return precio !== null && precio !== undefined;
+  });
+}
