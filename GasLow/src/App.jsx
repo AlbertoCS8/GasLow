@@ -123,11 +123,14 @@ function App() {
       );
       setGasolinerasOrdenadas(ordenadas);
       const filtradas = filtrarNulosEnPrecio(ordenadas, selectedCombustible);
+      setActualPage(0);
+
       setLengthGasolinerasFiltradas(filtradas.length);
       setGasolineras(filtradas.slice(0, 10));
       setPages(Math.ceil(filtradas.length / 10));
     });
   }
+
   function recalcularGasolineras(direction) {
     const nuevaPagina = actualPage + direction;
     const start = nuevaPagina * 10;
@@ -135,6 +138,7 @@ function App() {
     setGasolineras(GasolinerasOrdenadas.slice(start, end));
     setActualPage(nuevaPagina);
   }
+
   function reordenarGasolinerasPorPrecio(
     GasolinerasOrdenadas,
     tipoCombustible)
@@ -149,6 +153,7 @@ function App() {
     setGasolineras(filtradas.slice(0, 10));
     setPages(Math.ceil(filtradas.length / 10));
     setActualPage(0);
+    
   }
 
   return (
@@ -160,7 +165,7 @@ function App() {
       <button onClick={() => navigate("/busca-radio")}>
         Busca gasolineras cercanas
       </button>
-      {/* de momento vamos a hacerlo seleccionando el municipio y ya despues lo hare con proximidad y eso*/}
+      {/* Al clicar el boton 1 el index corresponde a 0*/}
       <Stepper activeStep={activeStep} className="Stepper">
         {steps.map((label, index) => {
           const stepProps = {};
@@ -176,7 +181,7 @@ function App() {
               {...stepProps}
               onClick={() => {
                 if (index < activeStep) setActiveStep(index);
-                if (activeStep < 4) setGasolineras([]);
+                if (index < 3) {setGasolineras([]); setGasolinerasOrdenadas([]);}
                 if (index == 5) {
                   setPages(0);
                   setActualPage(0);
@@ -247,14 +252,12 @@ function App() {
             setSelectedCombustible(e.target.value);
             if (GasolinerasOrdenadas.length > 0) {
               reordenarGasolinerasPorPrecio(
-                //cuando ya hay gasolineras cargadas y se cambia el combustible
-                GasolinerasOrdenadas, //deberia meter una nueva variable que me pinte el length de las filtradas porque si no siempre seran las gasolineras de el municipio
-                //si contar si uan vende adblue por ejemplo o no
+                //cuando ya hay gasolineras cargadas y se cambia SOLO el combustible
+                GasolinerasOrdenadas,
                 e.target.value
               );
               setActiveStep(4);
-              // setActualPage(0);
-              // setPages(0);
+              setActualPage(0);
             }
             handleNext();
           }}
@@ -273,7 +276,6 @@ function App() {
         <button
           onClick={() => {
             buscarGasolineras();
-            // setActiveStep(5);
           }}
         >
           Buscar

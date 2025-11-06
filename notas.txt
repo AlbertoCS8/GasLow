@@ -1,6 +1,6 @@
-meter algo de paginacion -->HECHO --> cuando vuelvo a hacer una búsqueda tirando para atrás en el combustible se vuelve loco, ARREGLAR
-algun mapilla sobretodo en el de busacr por radio y mejorar un poco las fichas de las gasolineras con alguna fotillo
+algun mapilla sobretodo en el de busacr por radio y mejorar un poco las fichas de las gasolineras con alguna fotillo --> esto lo dejo a pensar porque no puedo almacenar fotos de las 11900 gasolineras de todo españa ni hacer tantísimas peticiones que google no va gratis
 por que provincias pasamos ordenar las gasolineras mas baratas (pensar es muy extenso)
 script que meta los google placeId en bdd para obviar peticiones innecesarias a google (habría que cambiar la manera en la que se refresca la bdd)
 hacerla responsive
 que al clicar en la gasolinera se haga focus en el mapa o abra algun otro componente como por encima con la distancia entre usuario y gaso...?
+Un tercer componente que calcule rutas con km y gasto en gasolina y que vaya diciendo donde seria recomendable parar a repostar (PAJA MÁXIMA)
