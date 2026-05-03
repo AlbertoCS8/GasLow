@@ -1,0 +1,2 @@
+Start-Process powershell -ArgumentList "cd C:\Users\Alberto\Desktop\Proyects\GasLow\GasLow; npm run dev"
+Start-Process powershell -ArgumentList "cd C:\Users\Alberto\Desktop\Proyects\GasLow\GasLowBack; node server.js"

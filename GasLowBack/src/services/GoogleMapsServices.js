@@ -38,66 +38,66 @@ import fetch from "node-fetch";
 //         console.error('Error al buscar la gasolinera:', error);
 //         throw new Error('Error interno del servidor');
 //     }
-};*/ 
+};*/
 export const findGasolineraGoogleMapsId = async (gasolinera) => {
-    // console.log(gasolinera ,"llega al service");
-    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-    try {
-     const body = {
-    locationRestriction: {
-      circle: {
-        center: {
-          latitude: gasolinera.location.coordinates[1],
-          longitude: gasolinera.location.coordinates[0]
-        },
-        radius: 100.0  
-      }
-    },
-    rankPreference: "DISTANCE",
-    includedTypes: ["gas_station"],
-    maxResultCount: 1,
-    languageCode: "es"
-  };
-
-  const url = `https://places.googleapis.com/v1/places:searchNearby?key=${process.env.GOOGLE_MAPS_API_KEY}`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location,places.id"
-    },
-    body: JSON.stringify(body)
-  });
-  
-  const data = await response.json();
-  /* #region IDEA --> Hacer almacenamiento propio de fotos asociadas a las gasolineras una sola vez y asi poblas nuestra bdd con fotos relacionadas
-  a gasolineras para llenar la app y dar mas contexto sobre las mismas
-   Peticion para obtener fotos, de momento no la usamos
-  const photos = await fetch(`https://places.googleapis.com/v1/places/${data.places[0].id}?key=${GOOGLE_MAPS_API_KEY}`, {
-     method: "GET",
-     headers: {
-       "Content-Type": "application/json",
-       "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
-       "X-Goog-FieldMask": "id,displayName,photos"
-     }
-   });
-   const photosData = await photos.json();
-   console.log(photosData ,"photosData");
-   #endregion
-   */
-
-  if (data) {
-            //console.log(data ,"data que llega de google");
-            
-          const placeId = data.places[0].id;
-            return placeId;
-        } else {
-            console.log(data ," <-- debug data");
-            throw new Error('Gasolinera no encontrada');
+  // console.log(gasolinera ,"llega al service");
+  const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+  try {
+    const body = {
+      locationRestriction: {
+        circle: {
+          center: {
+            latitude: gasolinera.location.coordinates[1],
+            longitude: gasolinera.location.coordinates[0]
+          },
+          radius: 100.0
         }
-    } catch (error) {
-        console.error('Error al buscar la gasolinera:', error);
-        throw new Error('Error interno del servidor');
+      },
+      rankPreference: "DISTANCE",
+      includedTypes: ["gas_station"],
+      maxResultCount: 1,
+      languageCode: "es"
+    };
+
+    const url = `https://places.googleapis.com/v1/places:searchNearby?key=${process.env.GOOGLE_MAPS_API_KEY}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location,places.id"
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await response.json();
+    /* #region IDEA --> Hacer almacenamiento propio de fotos asociadas a las gasolineras una sola vez y asi poblas nuestra bdd con fotos relacionadas
+    a gasolineras para llenar la app y dar mas contexto sobre las mismas
+     Peticion para obtener fotos, de momento no la usamos
+    const photos = await fetch(`https://places.googleapis.com/v1/places/${data.places[0].id}?key=${GOOGLE_MAPS_API_KEY}`, {
+       method: "GET",
+       headers: {
+         "Content-Type": "application/json",
+         "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
+         "X-Goog-FieldMask": "id,displayName,photos"
+       }
+     });
+     const photosData = await photos.json();
+     console.log(photosData ,"photosData");
+     #endregion
+     */
+
+    if (data) {
+      console.log(data ,"data que llega de google");
+
+      const placeId = data.places[0].id;
+      return placeId;
+    } else {
+      console.log(data, " <-- debug data");
+      throw new Error('Gasolinera no encontrada');
     }
+  } catch (error) {
+    console.error('Error al buscar la gasolinera:', error);
+    throw new Error('Error interno del servidor');
+  }
 };

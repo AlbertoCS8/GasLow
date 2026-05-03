@@ -1,4 +1,4 @@
-import { act, useState } from "react";
+import { useState } from "react";
 import CCAA from "../src/ApiData/CCAA.json";
 import Provincias from "../src/ApiData/Provincias.json";
 import Municipios from "../src/ApiData/Municipios.json";
@@ -10,11 +10,6 @@ import {
   ordenarGasolinerasPorPrecio,
   filtrarNulosEnPrecio,
 } from "./utils/funciones.js";
-import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 
 function App() {
@@ -39,6 +34,15 @@ function App() {
   const [activeStep, setActiveStep] = useState(0);
   //Los Steps irán de 0 a 5
   const [skipped, setSkipped] = useState(new Set());
+  const comunidadSeleccionada = CCAA.find(
+    (ccaa) => ccaa.IDCCAA === selectedCCAA
+  )?.CCAA;
+  const provinciaSeleccionada = Provincias.find(
+    (prov) => prov.IDProvincia === selectedProvincia
+  )?.Provincia;
+  const municipioSeleccionado = Municipios.find(
+    (municipio) => municipio.IDMunicipio === selectedMunicipio
+  )?.Municipio;
 
   const isStepOptional = (step) => {};
 
@@ -157,210 +161,330 @@ function App() {
   }
 
   return (
-    <>
-      <h1>Gas Low</h1>
-      <p className="descripcion">
-        Encuentra gasolineras cerca de ti a un precio razonable y sin anuncios.
-      </p>
-      <button onClick={() => navigate("/busca-radio")}>
-        Busca gasolineras cercanas
-      </button>
-      {/* Al clicar el boton 1 el index corresponde a 0*/}
-      <Stepper activeStep={activeStep} className="Stepper">
-        {steps.map((label, index) => {
-          const stepProps = {};
-          const labelProps = {};
-          if (isStepOptional(index)) {
-          }
-          if (isStepSkipped(index)) {
-            stepProps.completed = false;
-          }
-          return (
-            <Step
-              key={label}
-              {...stepProps}
-              onClick={() => {
-                if (index < activeStep) setActiveStep(index);
-                if (index < 3) {setGasolineras([]); setGasolinerasOrdenadas([]);}
-                if (index == 5) {
-                  setPages(0);
-                  setActualPage(0);
-                }
-              }}
-            >
-              <StepLabel {...labelProps}>{label}</StepLabel>
-            </Step>
-          );
-        })}
-      </Stepper>
-      {activeStep === 0 ? (
-        <select
-          className="form-select w-auto"
-          onChange={(e) => {
-            setSelectedCCAA(e.target.value);
-            handleNext();
-          }}
-        >
-          <option value="">Selecciona tu comunidad autónoma</option>
-          {CCAA.map((ccaa) => (
-            <option key={ccaa.IDCCAA} value={ccaa.IDCCAA}>
-              {ccaa.CCAA}
-            </option>
-          ))}
-        </select>
-      ) : null}
-      {selectedCCAA && activeStep === 1 ? (
-        <select
-          className="form-select w-auto"
-          onChange={(e) => {
-            setSelectedProvincia(e.target.value);
-            handleNext();
-          }}
-        >
-          <option value="">Selecciona tu provincia</option>
-          {Provincias.filter(
-            (provincia) => provincia.IDCCAA === selectedCCAA
-          ).map((provincia) => (
-            <option key={provincia.IDProvincia} value={provincia.IDProvincia}>
-              {provincia.Provincia}
-            </option>
-          ))}
-        </select>
-      ) : null}
-      {selectedProvincia && activeStep === 2 ? (
-        <select
-          className="form-select w-auto"
-          onChange={(e) => {
-            setSelectedMunicipio(e.target.value);
-            handleNext();
-          }}
-        >
-          <option value="">Selecciona tu municipio</option>
-          {Municipios.filter(
-            (municipio) => municipio.Provincia === selectedProvincia
-          ).map((municipio) => (
-            <option key={municipio.IDMunicipio} value={municipio.IDMunicipio}>
-              {municipio.Municipio}
-            </option>
-          ))}
-        </select>
-      ) : null}
-      {selectedMunicipio && activeStep === 3 ? (
-        <select
-          className="form-select w-auto"
-          onChange={(e) => {
-            setSelectedCombustible(e.target.value);
-            if (GasolinerasOrdenadas.length > 0) {
-              reordenarGasolinerasPorPrecio(
-                //cuando ya hay gasolineras cargadas y se cambia SOLO el combustible
-                GasolinerasOrdenadas,
-                e.target.value
-              );
-              setActiveStep(4);
-              setActualPage(0);
-            }
-            handleNext();
-          }}
-        >
-          <option value="">Selecciona el tipo de combustible</option>
-          {/* <option value="Gasoleo A">Gasoleo A</option>
-            <option value="Gasolina 95 E5">Gasolina 95 E5</option> */}
-          {Combustibles.map((combustible) => (
-            <option value={combustible.Tipo} key={combustible.Tipo}>
-              {combustible.Tipo}
-            </option>
-          ))}
-        </select>
-      ) : null}
-      {selectedMunicipio && activeStep === 4 && gasolineras.length === 0 ? (
-        <button
-          onClick={() => {
-            buscarGasolineras();
-          }}
-        >
-          Buscar
-        </button>
-      ) : null}
-      <div>
-        {gasolineras &&
-          activeStep >= 4 &&
-          gasolineras.map(
-            (gasolinera) =>
-              gasolinera[`Precio ${selectedCombustible}`] !== null && (
-                <div key={gasolinera.IDEESS}>
-                  <h2>{gasolinera.Rótulo}</h2>
-                  <p>
-                    {gasolinera.Dirección}, {gasolinera.Localidad} (
-                    {gasolinera.Provincia})
-                  </p>
-                  {
-                    <p>
-                      Precio {selectedCombustible}:{" "}
-                      {gasolinera[`Precio ${selectedCombustible}`]}
-                    </p>
-                  }
-                  {/*#region
-                   <p>Click aquí para ver en Google Maps <a href={`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${gasolinera.Rótulo}&inputtype=textquery&locationbias=point:${gasolinera.Latitud},${gasolinera.Longitud}&fields=place_id,name,geometry,formatted_address&key=${GOOGLE_MAPS_API_KEY}`}>enlace</a></p> 
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-icon lucide-map" onClick={async () => {window.open(`https://www.google.com/maps/search/?api=1&query=${gasolinera.Latitud},${gasolinera["Longitud (WGS84)"]},${gasolinera.Rótulo},${gasolinera.Provincia},${gasolinera.Localidad},${gasolinera.Dirección}`, "_blank"); }}>
-                  <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/>
-                  <path d="M15 5.764v15"/>
-                  <path d="M9 3.236v15"/>
-                  </svg>
-                  Version con link directo a maps (sin usar el backend){/* onClick={async () => {
-                  #endregion*/}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-map-icon lucide-map"
-                    onClick={async () => {
-                      let placeId = await getGasolineraId(gasolinera);
-                      window.open(
-                        `https://www.google.com/maps/place/?q=place_id:${placeId}`,
-                        "_blank"
-                      );
-                    }}
-                  >
-                    <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" />
-                    <path d="M15 5.764v15" />
-                    <path d="M9 3.236v15" />
-                  </svg>
-                </div>
-              )
-          )}
+    <section className="app-shell">
+      <div className="hero-panel">
+        <div className="hero-copy">
+          <span className="eyebrow">Gasolineras baratas, sin ruido</span>
+          <h1 className="hero-title">
+            <img
+              src="/web-app-manifest-512x512_2.png"
+              alt="Gas Low Logo"
+              className="hero-logo"
+            />
+            Gas Low
+          </h1>
+          <p className="hero-text">
+            Filtra por comunidad, provincia, municipio y combustible con una
+            interfaz mas clara, rapida y comoda en movil.
+          </p>
+        </div>
+
+        <div className="hero-actions">
+          <button
+            className="btn btn-success btn-lg hero-button"
+            onClick={() => navigate("/busca-radio")}
+          >
+            Buscar por radio
+          </button>
+          <div className="hero-stats">
+            <div className="hero-stat">
+              <span className="hero-stat-value">4 pasos</span>
+              <span className="hero-stat-label">flujo guiado</span>
+            </div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">10</span>
+              <span className="hero-stat-label">resultados por pagina</span>
+            </div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">Maps</span>
+              <span className="hero-stat-label">atajo directo</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div>
-        {activeStep >= 4 && GasolinerasOrdenadas.length > 0 && 
-          (gasolineras.length > 0 ? (
-            <>
-              {actualPage < pages - 1 && (
-                <button onClick={() => recalcularGasolineras(1)}>
-                  Siguiente
-                </button>
-              )}
-              {actualPage > 0 && (
-                <button onClick={() => recalcularGasolineras(-1)}>
-                  Anterior
-                </button>
-              )}
-              <p>{`Mostrando ${actualPage * 10 + 1} - ${
-                actualPage * 10 + gasolineras.length
-              } de ${LengthGasolinerasFiltradas}`}</p>
-            </>
-          ) : (
-            <p>
-              No se encontraron gasolineras en este municipio o con {selectedCombustible}.
+
+      <div className="content-grid">
+        <div className="glass-panel search-panel">
+          <div className="panel-heading">
+            <div>
+              <p className="panel-kicker">Busqueda por municipio</p>
+              <h2 className="panel-title">Encuentra la mejor opcion</h2>
+            </div>
+            <p className="panel-description">
+              Avanza paso a paso y obten un listado ordenado por precio.
             </p>
-          ))}
+          </div>
+
+          <div className="stepper-wrapper">
+            {steps.map((label, index) => (
+              <div
+                key={label}
+                className={`stepper-item ${
+                  index === activeStep
+                    ? "active"
+                    : index < activeStep
+                    ? "completed"
+                    : ""
+                }`}
+                onClick={() => {
+                  if (index < activeStep) setActiveStep(index);
+                  if (index === 0) {
+                    setSelectedCCAA("");
+                    setSelectedProvincia("");
+                    setSelectedMunicipio("");
+                    setSelectedCombustible("");}
+                  if (index === 1){
+                    setSelectedProvincia("");
+                    setSelectedMunicipio("");
+                    setSelectedCombustible("");
+                  }
+                  if (index === 2){
+                    setSelectedMunicipio("");
+                    setSelectedCombustible("");
+                  }
+                  if (index === 3){
+                    setSelectedCombustible("");
+                  }
+                  if (index < 3) {
+                    setGasolineras([]);
+                    setGasolinerasOrdenadas([]);
+                  }
+                  if (index === 5) {
+                    setPages(0);
+                    setActualPage(0);
+                  }
+                }}
+              >
+                <div className="step-counter">{index + 1}</div>
+                <div className="step-name">{label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="selection-summary">
+            <span className={comunidadSeleccionada ? "summary-pill active" : "summary-pill"}>
+              {comunidadSeleccionada || "Comunidad"}
+            </span>
+            <span className={selectedProvincia ? "summary-pill active" : "summary-pill"}>
+              {selectedProvincia || "Provincia"}
+            </span>
+            <span className={municipioSeleccionado ? "summary-pill active" : "summary-pill"}>
+              {municipioSeleccionado || "Municipio"}
+            </span>
+            <span className={selectedCombustible ? "summary-pill active" : "summary-pill"}>
+              {selectedCombustible || "Combustible"}
+            </span>
+          </div>
+
+          {activeStep === 0 && (
+            <div className="control-panel">
+              <label className="control-label">Comunidad autonoma</label>
+              <select
+                className="form-select app-select"
+                onChange={(e) => {
+                  setSelectedCCAA(e.target.value);
+                  handleNext();
+                }}
+              >
+                <option value="">Selecciona tu comunidad autonoma</option>
+                {CCAA.map((ccaa) => (
+                  <option key={ccaa.IDCCAA} value={ccaa.IDCCAA}>
+                    {ccaa.CCAA}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {selectedCCAA && activeStep === 1 && (
+            <div className="control-panel">
+              <label className="control-label">Provincia</label>
+              <select
+                className="form-select app-select"
+                onChange={(e) => {
+                  setSelectedProvincia(e.target.value);
+                  handleNext();
+                }}
+              >
+                <option value="">Selecciona tu provincia</option>
+                {Provincias.filter((prov) => prov.IDCCAA === selectedCCAA).map(
+                  (prov) => (
+                    <option key={prov.IDProvincia} value={prov.IDProvincia}>
+                      {prov.Provincia}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+
+          {selectedProvincia && activeStep === 2 && (
+            <div className="control-panel">
+              <label className="control-label">Municipio</label>
+              <select
+                className="form-select app-select"
+                onChange={(e) => {
+                  setSelectedMunicipio(e.target.value);
+                  handleNext();
+                }}
+              >
+                <option value="">Selecciona tu municipio</option>
+                {Municipios.filter((m) => m.Provincia === selectedProvincia).map(
+                  (m) => (
+                    <option key={m.IDMunicipio} value={m.IDMunicipio}>
+                      {m.Municipio}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+
+          {selectedMunicipio && activeStep === 3 && (
+            <div className="control-panel">
+              <label className="control-label">Combustible</label>
+              <select
+                className="form-select app-select"
+                onChange={(e) => {
+                  setSelectedCombustible(e.target.value);
+                  if (GasolinerasOrdenadas.length > 0) {
+                    reordenarGasolinerasPorPrecio(
+                      GasolinerasOrdenadas,
+                      e.target.value
+                    );
+                    setActiveStep(4);
+                    setActualPage(0);
+                  }
+                  handleNext();
+                }}
+              >
+                <option value="">Selecciona el tipo de combustible</option>
+                {Combustibles.map((comb) => (
+                  <option value={comb.Tipo} key={comb.Tipo}>
+                    {comb.Tipo}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {selectedMunicipio && activeStep === 4 && gasolineras.length === 0 && (
+            <div className="cta-row">
+              <button className="btn btn-primary btn-lg cta-button" onClick={buscarGasolineras}>
+                Buscar gasolineras
+              </button>
+            </div>
+          )}
+        </div>
+
+        <aside className="glass-panel info-panel">
+          <p className="panel-kicker">Resumen</p>
+          <h3 className="info-title">Tu consulta actual</h3>
+          <div className="info-list">
+            <div className="info-item">
+              <span>Zona</span>
+              <strong>{municipioSeleccionado || provinciaSeleccionada || "Pendiente"}</strong>
+            </div>
+            <div className="info-item">
+              <span>Combustible</span>
+              <strong>{selectedCombustible || "Pendiente"}</strong>
+            </div>
+            <div className="info-item">
+              <span>Resultados</span>
+              <strong>{LengthGasolinerasFiltradas || 0}</strong>
+            </div>
+          </div>
+          <p className="info-note">
+            Cuando completes la seleccion, el listado aparecera ordenado por
+            precio y con acceso directo a Google Maps.
+          </p>
+        </aside>
       </div>
-      {/*De momento vamos a dejarlo asi, en futuras actualizaciones mejoraremos estetica y filtros aparte de llevarte directo a maps  */}
-    </>
+
+      {activeStep >= 4 && gasolineras.length > 0 && (
+        <div className="results-section">
+          <div className="results-header">
+            <div>
+              <p className="panel-kicker">Resultados</p>
+              <h2 className="panel-title">Gasolineras encontradas</h2>
+            </div>
+            {gasolineras.length > 0 && (
+              <p className="results-count">
+                Mostrando {actualPage * 10 + 1} - {actualPage * 10 + gasolineras.length}
+                de {LengthGasolinerasFiltradas}
+              </p>
+            )}
+          </div>
+
+          <div className="results-grid">
+            {gasolineras &&
+              gasolineras.map(
+                (g) =>
+                  g[`Precio ${selectedCombustible}`] !== null && (
+                    <article className="station-card" key={g.IDEESS}>
+                      <div className="station-card__top">
+                        <div>
+                          <p className="station-brand">{g["Rótulo"]}</p>
+                          <p className="station-address">
+                            {g["Dirección"]}, {g.Localidad} ({g.Provincia})
+                          </p>
+                        </div>
+                        <div className="price-badge">
+                          <span>Precio</span>
+                          <strong>{g[`Precio ${selectedCombustible}`]}</strong>
+                        </div>
+                      </div>
+
+                      <button
+                        className="btn btn-outline-success station-map-button"
+                        onClick={async () => {
+                          let placeId = await getGasolineraId(g);
+                          window.open(
+                            `https://www.google.com/maps/place/?q=place_id:${placeId}`,
+                            "_blank"
+                          );
+                        }}
+                      >
+                        Ver en mapa
+                      </button>
+                    </article>
+                  )
+              )}
+          </div>
+
+          {GasolinerasOrdenadas.length > 0 && (
+            <div className="pagination-panel">
+              {gasolineras.length > 0 ? (
+                <>
+                  <div className="pagination-actions">
+                    {actualPage > 0 && (
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => recalcularGasolineras(-1)}
+                      >
+                        Anterior
+                      </button>
+                    )}
+                    {actualPage < pages - 1 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => recalcularGasolineras(1)}
+                      >
+                        Siguiente
+                      </button>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <p className="empty-state">
+                  No se encontraron gasolineras en este municipio o con {selectedCombustible}.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
 
