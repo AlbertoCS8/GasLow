@@ -12,6 +12,7 @@ function BuscaRadio() {
   let [combustibleSeleccionado, setCombustibleSeleccionado] = React.useState();
   let [gasolineras, setGasolineras] = React.useState([]);
   let [destino, setDestino] = React.useState(null);
+  let [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
 
   return (
@@ -53,18 +54,22 @@ function BuscaRadio() {
                 <button
                   className="btn btn-success btn-lg cta-button"
                   onClick={() => {
+                    loading ? setLoading(false) : setLoading(true);
                     navigator.geolocation.getCurrentPosition(
                       (position) =>
                         setUbicacion({
                           lat: position.coords.latitude,
                           lng: position.coords.longitude,
                         }),
-                      (error) => console.error(error),
+                      (error) => {
+                        console.error(error);
+                        setLoading(false);
+                      },
                       { enableHighAccuracy: true, timeout: 10000 }
                     );
                   }}
                 >
-                  Obtener ubicacion
+                  {loading ? "Obteniendo ubicación..." : "Obtener ubicacion"}
                 </button>
               </div>
             ) : (
@@ -144,9 +149,6 @@ function BuscaRadio() {
                 <strong>{gasolineras.length}</strong>
               </div>
             </div>
-            <p className="info-note">
-              Al seleccionar una estacion puedes verla en el mapa integrado o abrirla directamente en Google Maps.
-            </p>
           </aside>
         </div>
 
@@ -183,11 +185,17 @@ function BuscaRadio() {
                         <button
                           className="btn btn-outline-success btn-sm"
                           onClick={async () => {
+                            try {
                             const placeId = await getGasolineraId(g);
+
                             window.open(
                               `https://www.google.com/maps/place/?q=place_id:${placeId}`,
                               "_blank"
                             );
+                          } catch (error) {
+                            console.error("Error al abrir Google Maps:", error);
+                            alert("No se pudo abrir Google Maps. Inténtalo de nuevo.");
+                          }
                           }}
                         >
                           Google Maps

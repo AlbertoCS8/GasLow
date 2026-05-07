@@ -65,7 +65,9 @@ export const findGasolineraGoogleMapsId = async (gasolinera) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location,places.id"
+        // "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location,places.id"
+        "X-Goog-FieldMask": "places.id" // cuantos mas campos pidamos mas lenta sera la respuesta y mas tokens consumira, de momento
+        //  solo necesitamos el id para abrir la ubicacion en google maps
       },
       body: JSON.stringify(body)
     });
@@ -88,12 +90,12 @@ export const findGasolineraGoogleMapsId = async (gasolinera) => {
      */
 
     if (data) {
-      console.log(data ,"data que llega de google");
+      // console.log(data ,"data que llega de google");
 
       const placeId = data.places[0].id;
       return placeId;
     } else {
-      console.log(data, " <-- debug data");
+      // console.log(data, " <-- debug data");
       throw new Error('Gasolinera no encontrada');
     }
   } catch (error) {

@@ -394,10 +394,7 @@ function App() {
               <strong>{LengthGasolinerasFiltradas || 0}</strong>
             </div>
           </div>
-          <p className="info-note">
-            Cuando completes la seleccion, el listado aparecera ordenado por
-            precio y con acceso directo a Google Maps.
-          </p>
+          
         </aside>
       </div>
 
