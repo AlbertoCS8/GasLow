@@ -1,9 +1,12 @@
 import { MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
-dotenv.config()
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config()
+}
+
 
 const mongoURI = process.env.MONGODB_URI
-const dbName = 'gasLow'
+const dbName = 'GasLow'
 
 let dbConnection
 
