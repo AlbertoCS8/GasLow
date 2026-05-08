@@ -7,7 +7,10 @@ import {connectToDatabase} from './src/services/mongoServices.js'
 import { cargarDatosApi } from './src/services/actualizacionDiaria.js'
 import cron from 'node-cron';
 const app = express()
-const port = 3000
+if (process.env.PORT != null) {
+const port = 3000} else {
+  const port = process.env.PORT
+}
 if (process.env.NODE_ENV !== 'production') {
  dotenv.config() 
 }
@@ -31,5 +34,6 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
+  console.log(`Server is running on port ${port}`)
   
 })
