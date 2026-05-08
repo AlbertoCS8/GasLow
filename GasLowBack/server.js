@@ -33,9 +33,13 @@ cron.schedule('0 0 * * *', () => { // Cada día a medianoche se cargan los datos
 
 
 app.use(cors())
+console.log('CORS habilitado para todas las rutas')
 app.use(express.json())
+console.log('Middleware de análisis de JSON habilitado') // Esto es para asegurarnos de que el middleware se está aplicando correctamente
 app.use(GoogleMapsRoutes)
+console.log('Rutas de Google Maps cargadas') // Esto es para asegurarnos de que las rutas se están cargando correctamente
 app.use(GasolinerasRoutes)
+console.log('Rutas de Gasolineras cargadas') // Esto es para asegurarnos de que las rutas se están cargando correctamente
 app.get('/', (req, res) => {
   res.send('Node server is running!')
 })
