@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export async function obtenerGasolinerasPorMunicipio(idMunicipio) {
   // const response = await fetch(`https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/${idMunicipio}`);
   // Antes usabamos una api externa pero ha evolucionado y ahora usaremos nuestra base de datos que nos permitirá hacer mas funciones como la de buscar por un radio de km

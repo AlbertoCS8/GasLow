@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 /**OBSOLETO, usaremos una query a google maps en vez de lo que tenia pensado */
 export const getGasolineraId = async (gasolinera) => {
     try {
