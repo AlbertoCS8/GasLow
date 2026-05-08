@@ -6,48 +6,42 @@ import GasolinerasRoutes from './src/routes/GasolinerasRoutes.js'
 import {connectToDatabase} from './src/services/mongoServices.js'
 import { cargarDatosApi } from './src/services/actualizacionDiaria.js'
 import cron from 'node-cron';
+process.on('uncaughtException', console.error)
+process.on('unhandledRejection', console.error)
+
 const app = express()
 const port = process.env.PORT || 3000
 
 if (process.env.NODE_ENV !== 'production') {
  dotenv.config() 
 }
+async function startServer() {
+  try {
+    const db = await connectToDatabase()
 
+    app.use(cors())
+    console.log('CORS habilitado')
 
-const db = await connectToDatabase()
+    app.use(express.json())
+    console.log('JSON middleware habilitado')
 
+    app.use(GoogleMapsRoutes)
+    console.log('Google routes cargadas')
 
+    app.use(GasolinerasRoutes)
+    console.log('Gasolineras routes cargadas')
 
+    app.get('/', (req, res) => {
+      res.send('Node server is running!')
+    })
 
+    app.listen(port, () => {
+      console.log(`Server running on ${port}`)
+    })
 
-app.use(cors())
-console.log('CORS habilitado para todas las rutas')
-app.use(express.json())
-console.log('Middleware de análisis de JSON habilitado') // Esto es para asegurarnos de que el middleware se está aplicando correctamente
-app.use(GoogleMapsRoutes)
-console.log('Rutas de Google Maps cargadas') // Esto es para asegurarnos de que las rutas se están cargando correctamente
-app.use(GasolinerasRoutes)
-console.log('Rutas de Gasolineras cargadas') // Esto es para asegurarnos de que las rutas se están cargando correctamente
-app.get('/', (req, res) => {
-  res.send('Node server is running!')
-})
+  } catch (error) {
+    console.error('Error iniciando servidor:', error)
+  }
+}
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
-  
-})
-// try {    
-//   console.log('Cargando datos iniciales...')
-//   await cargarDatosApi(db)
-// }catch (error) {
-//     console.error('Error al cargar los datos iniciales:', error);
-// }
-
-// cron.schedule('0 0 * * *', async () => { // Cada día a medianoche se cargan los datos
-//   try {
-//     console.log('Ejecutando tarea programada para cargar datos diarios...')
-//     await cargarDatosApi(db)
-//   } catch (error) {
-//     console.error('Error al cargar los datos diarios:', error);
-//   }
-// })
+startServer()
