@@ -36,18 +36,18 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
   
 })
-try {    
-  console.log('Cargando datos iniciales...')
-  await cargarDatosApi(db)
-}catch (error) {
-    console.error('Error al cargar los datos iniciales:', error);
-}
+// try {    
+//   console.log('Cargando datos iniciales...')
+//   await cargarDatosApi(db)
+// }catch (error) {
+//     console.error('Error al cargar los datos iniciales:', error);
+// }
 
-cron.schedule('0 0 * * *', async () => { // Cada día a medianoche se cargan los datos
-  try {
-    console.log('Ejecutando tarea programada para cargar datos diarios...')
-    await cargarDatosApi(db)
-  } catch (error) {
-    console.error('Error al cargar los datos diarios:', error);
-  }
-})
+// cron.schedule('0 0 * * *', async () => { // Cada día a medianoche se cargan los datos
+//   try {
+//     console.log('Ejecutando tarea programada para cargar datos diarios...')
+//     await cargarDatosApi(db)
+//   } catch (error) {
+//     console.error('Error al cargar los datos diarios:', error);
+//   }
+// })
