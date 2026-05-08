@@ -7,6 +7,9 @@ export async function obtenerGasolinerasPorMunicipio(idMunicipio) {
   console.log('PRUEBAAAAAA3',process.env.API_BASE_URL);
   console.log('PRUEBAAAAAA4',process.env.VERCEL_ENV);
   console.log('PRUEBAAAAAA5',import.meta.env);
+  console.log("MODE:", import.meta.env.MODE);
+console.log("BASE:", import.meta.env.BASE_URL);
+console.log("VITE:", import.meta.env.VITE_API_BASE_URL);
   const response = await fetch(`${API_BASE_URL}/gasolineras/municipio/${idMunicipio}`);
   const data = await response.json();
   return data;
