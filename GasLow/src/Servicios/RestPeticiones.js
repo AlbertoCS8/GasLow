@@ -2,15 +2,15 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export async function obtenerGasolinerasPorMunicipio(idMunicipio) {
   // const response = await fetch(`https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/${idMunicipio}`);
   // Antes usabamos una api externa pero ha evolucionado y ahora usaremos nuestra base de datos que nos permitirá hacer mas funciones como la de buscar por un radio de km
-  console.log('PRUEBASSSSSSSSSS', API_BASE_URL);
-  console.log('PRUEBAAAAAA2',process.env.VITE_API_BASE_URL);
-  console.log('PRUEBAAAAAA3',process.env.API_BASE_URL);
-  console.log('PRUEBAAAAAA4',process.env.VERCEL_ENV);
-  console.log('PRUEBAAAAAA5',import.meta.env);
-  console.log("MODE:", import.meta.env.MODE);
-console.log("BASE:", import.meta.env.BASE_URL);
-console.log("VITE:", import.meta.env.VITE_API_BASE_URL);
-console.log("URL FINAL:", `${API_BASE_URL}/gasolineras/municipio/${idMunicipio}`);
+//   console.log('PRUEBASSSSSSSSSS', API_BASE_URL);
+//   console.log('PRUEBAAAAAA2',process.env.VITE_API_BASE_URL);
+//   console.log('PRUEBAAAAAA3',process.env.API_BASE_URL);
+//   console.log('PRUEBAAAAAA4',process.env.VERCEL_ENV);
+//   console.log('PRUEBAAAAAA5',import.meta.env);
+//   console.log("MODE:", import.meta.env.MODE);
+// console.log("BASE:", import.meta.env.BASE_URL);
+// console.log("VITE:", import.meta.env.VITE_API_BASE_URL);
+// console.log("URL FINAL:", `${API_BASE_URL}/gasolineras/municipio/${idMunicipio}`);
   const response = await fetch(`${API_BASE_URL}/gasolineras/municipio/${idMunicipio}`);
   const data = await response.json();
   return data;
