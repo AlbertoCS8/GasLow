@@ -15,11 +15,20 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 const db = await connectToDatabase()
+try {    
+  await cargarDatosApi(db)
+}catch (error) {
+    console.error('Error al cargar los datos iniciales:', error);
+}
 
 cron.schedule('0 0 * * *', () => { // Cada día a medianoche se cargan los datos
+  try {
     cargarDatosApi(db)
+  } catch (error) {
+    console.error('Error al cargar los datos diarios:', error);
+  }
 })
-cargarDatosApi(db)
+
 
 
 
