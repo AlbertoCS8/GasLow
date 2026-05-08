@@ -1,9 +1,10 @@
+const API_BASE_URL = process.env.API_BASE_URL;
 /**OBSOLETO, usaremos una query a google maps en vez de lo que tenia pensado */
 export const getGasolineraId = async (gasolinera) => {
     try {
         // console.log('Gasolinera que envío:', gasolinera);
 // console.log('Body como JSON:', JSON.stringify(gasolinera));
-        const fetchResponse = await fetch('http://localhost:3000/getGasolineraId', {
+        const fetchResponse = await fetch(`${API_BASE_URL}/getGasolineraId`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
