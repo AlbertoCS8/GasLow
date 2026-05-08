@@ -3,7 +3,7 @@ import cors from 'cors'
 import express from 'express'
 import GoogleMapsRoutes from './src/routes/GoogleMapsRoutes.js'
 import GasolinerasRoutes from './src/routes/GasolinerasRoutes.js'
-import {connectToDatabase} from './src/services/mongoServices.js'
+import { connectToDatabase } from './src/services/mongoServices.js'
 import { cargarDatosApi } from './src/services/actualizacionDiaria.js'
 import cron from 'node-cron';
 process.on('uncaughtException', console.error)
@@ -13,7 +13,7 @@ const app = express()
 const port = process.env.PORT || 3000
 
 if (process.env.NODE_ENV !== 'production') {
- dotenv.config() 
+  dotenv.config()
 }
 async function startServer() {
   try {
@@ -37,6 +37,21 @@ async function startServer() {
 
     app.listen(port, () => {
       console.log(`Server running on ${port}`)
+    })
+    try {
+      console.log('Cargando datos iniciales...')
+      await cargarDatosApi(db)
+    } catch (error) {
+      console.error('Error al cargar los datos iniciales:', error);
+    }
+
+    cron.schedule('0 0 * * *', async () => { // Cada día a medianoche se cargan los datos
+      try {
+        console.log('Ejecutando tarea programada para cargar datos diarios...')
+        await cargarDatosApi(db)
+      } catch (error) {
+        console.error('Error al cargar los datos diarios:', error);
+      }
     })
 
   } catch (error) {
