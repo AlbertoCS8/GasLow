@@ -164,7 +164,7 @@ function App() {
     <section className="app-shell">
       <div className="hero-panel">
         <div className="hero-copy">
-          <span className="eyebrow">Gasolineras baratas, sin ruido</span>
+          <span className="eyebrow">Gasolineras baratas, sin líos</span>
           <h1 className="hero-title">
             <img
               src="/web-app-manifest-512x512_2.png"
@@ -175,7 +175,7 @@ function App() {
           </h1>
           <p className="hero-text">
             Filtra por comunidad, provincia, municipio y combustible con una
-            interfaz mas clara, rapida y comoda en movil.
+            interfaz más clara, rápida y cómoda en móvil.
           </p>
         </div>
 

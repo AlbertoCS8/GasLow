@@ -1,4 +1,4 @@
-import dotenv from 'dotenv'
+import dotenv from 'dotenv' // en produccion osea en render no se cargan las variables de entorno, lo comento para subirlo al ghub de despliegue
 import cors from 'cors'
 import express from 'express'
 import GoogleMapsRoutes from './src/routes/GoogleMapsRoutes.js'
@@ -8,7 +8,10 @@ import { cargarDatosApi } from './src/services/actualizacionDiaria.js'
 import cron from 'node-cron';
 const app = express()
 const port = 3000
-dotenv.config()
+if (process.env.NODE_ENV !== 'production') {
+ dotenv.config() 
+}
+
 
 const db = await connectToDatabase()
 
